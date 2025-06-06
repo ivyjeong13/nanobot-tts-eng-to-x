@@ -1,0 +1,127 @@
+publish:
+  introduction: |-
+    This is a pull request bot that can help you with pull request reviews. It will retrieve 
+    pull requests assigned to you for review, read the code, and provide suggestions for review.
+    
+    It will do this for each pull request. This agent does not chat.
+
+    Enter the owner & repository name you want to check assigned pull requests for. (ex. owner/repo)
+  entrypoint: tts/init
+
+agents:
+  translator:
+    model: gpt-4o
+    chatHistory: false
+    instructions: |-
+      Use the lingo tool to translate the text to the target language. Return the output with the following properties:
+    output:
+      strict: true
+      schema: 
+        type: object
+        additionalProperties: false
+        required: [ translation, locale ]
+        properties:
+          translation:
+            type: string
+            description: The translated text.
+          locale:
+            type: string
+            description: The locale code of the language.
+    toolChoice: required
+    tools: [lingo]
+  languages: 
+    model: gpt-4o
+    chatHistory: false
+    instructions: |-
+      You are a bot that will return a list of available languages and their ids. If you are given a specific language,
+      just return the matching language in the array. You should return an array of objects with the following properties:
+    output:
+      strict: true
+      schema:
+        type: object
+        additionalProperties: false
+        required: [ languages ]
+        properties:
+          languages:
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              required: [ id, name, locale ]
+              properties:
+                id:
+                  type: string
+                  description: The id of the language.
+                name:
+                  type: string
+                  description: The name of the language.
+                locale:
+                  type: string  
+                  description: The locale of the language. (ex. ja, en, etc.)
+    toolChoice: required
+    tools: [tts/languages]
+  voices: 
+    model: gpt-4o
+    chatHistory: false
+    instructions: |-
+      You are a bot that will return a list of available voices strictly in the format of:
+    output:
+      strict: true
+      schema:
+        type: object
+        additionalProperties: false
+        required: [ voices ]
+        properties:
+          voices:
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              required: [ id, name, gender, age ]
+              properties:
+                id:
+                  type: string
+                  description: The id of the voice.
+                name:
+                  type: string
+                  description: The name of the voice.
+                gender:
+                  type: number
+                  description: The gender of the voice.
+                age:
+                  type: number
+                  description: The age of the voice.
+    toolChoice: required
+    tools: [tts/voices]
+  speaker:
+    model: gpt-4o
+    chatHistory: false
+    instructions: |-
+      You are an audio bot that will translate the text to the user's provided locale language and output it
+      as text to speech using the tts/speech tool. The user provided input will be in the following format: {locale}:{text}. 
+      When translating the text, the translation should sound natural, as if coming from a casual setting between friends. 
+      When sending to the tts/speech tool, the prompt should be in the following format: {locale}:{translatedText}.
+    output:
+      strict: true
+      schema:
+        type: object
+        additionalProperties: false
+        required: [ output_url ]
+        properties:
+          output_url:
+            type: string
+            description: The url of the audio file
+    toolChoice: required
+    tools: [tts/speech]
+mcpServers:
+  lingo:
+    command: npx
+    args: ["-y", "lingo.dev", "mcp", "${LINGO_API_KEY}"]
+    env: 
+      LINGO_API_KEY: ${LINGO_API_KEY}
+  tts:
+    command: npx
+    args: [ "tsx", "tts.ts" ]
+    env:
+      CAMB_AI_API_KEY: ${CAMB_AI_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
