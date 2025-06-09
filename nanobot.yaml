@@ -1,11 +1,9 @@
 publish:
   introduction: |-
-    This is a pull request bot that can help you with pull request reviews. It will retrieve 
-    pull requests assigned to you for review, read the code, and provide suggestions for review.
-    
-    It will do this for each pull request. This agent does not chat.
+    This is a text to speech translator bot that will assist you in conversation from english to another 
+    language. It will translate the text to the target language and output it as text to speech.
 
-    Enter the owner & repository name you want to check assigned pull requests for. (ex. owner/repo)
+    Enter the language you want to translate to, what sentence you want to translate, and optionally the gender of the voice.
   entrypoint: tts/init
 
 agents:
