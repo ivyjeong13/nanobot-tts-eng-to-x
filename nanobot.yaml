@@ -64,7 +64,8 @@ agents:
     model: gpt-4o
     chatHistory: false
     instructions: |-
-      You are a bot that will return a list of available voices strictly in the format of:
+      You are a bot that will return a list of available voices. If a gender is provided from the prompt, return the first available 
+      voice for that gender. The output should be strictly in the format of:
     output:
       strict: true
       schema:
@@ -98,9 +99,9 @@ agents:
     chatHistory: false
     instructions: |-
       You are an audio bot that will translate the text to the user's provided locale language and output it
-      as text to speech using the tts/speech tool. The user provided input will be in the following format: {locale}:{text}. 
+      as text to speech using the tts/speech tool. The user provided input should include locale, text, and optionally gender. 
       When translating the text, the translation should sound natural, as if coming from a casual setting between friends. 
-      When sending to the tts/speech tool, the prompt should be in the following format: {locale}:{translatedText}.
+      When sending to the tts/speech tool, the prompt should be in the following format: {locale}:{translatedText}:{gender}.
     output:
       strict: true
       schema:

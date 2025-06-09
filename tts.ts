@@ -69,6 +69,8 @@ const pollTaskUntilSuccess = async (taskId: string) => {
   if (json.status.toLowerCase() === "success") {
     return json.run_id;
   }
+  // wait 3 seconds before polling again
+  await new Promise((resolve) => setTimeout(resolve, 3000));
   return await pollTaskUntilSuccess(taskId);
 };
 
@@ -96,7 +98,7 @@ server.tool("speech", { prompt: z.string() }, async ({ prompt }, ctx) => {
   if (!process.env.CAMB_AI_API_KEY)
     return text("Error: CAMB_AI_API_KEY is not set");
 
-  const [locale, textToSpeech] = prompt.split(":");
+  const [locale, textToSpeech, genderToUse] = prompt.split(":");
 
   const languages = await sampleText(
     ctx,
@@ -110,7 +112,7 @@ server.tool("speech", { prompt: z.string() }, async ({ prompt }, ctx) => {
 
   if (!language) return text("Error: No language found");
 
-  const voices = await sampleText(ctx, "voices", "voices");
+  const voices = await sampleText(ctx, "voices", genderToUse ? `gender: ${genderToUse}` : "");
   const parsedVoices = JSON.parse(voices) as {
     voices: { id: string; name: string; gender: number; age: number }[];
   };
